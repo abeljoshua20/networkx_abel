@@ -4,14 +4,14 @@ Created on Sun Apr 11 15:41:07 2021.
 
 @author: abelj, reference nxtools by Leodegario Lorenzo II
 """
-
+import networkx as nx
 import numpy as np
 
 
 class NodeSizeScaler():
     """Node size scaler object."""
 
-    def __init__(self, min_size=None, max_size=300):
+    def __init__(self, min_size=None, max_size=300, method='degree'):
         """
         Initiialize the node size scaler object.
 
@@ -22,10 +22,16 @@ class NodeSizeScaler():
 
         max_size : float, default=300
             Maximum node size
+
+        method : str, default='degree'
+            Method to scale the nodes, {'degree', 'betweenness'}.
+            If degree, scale by the degree of the nodes.
+            If betweenness, scale by the betweenness centrality of the nodes.
         """
         # Store minimum and maximum size
         self.min_size = min_size
         self.max_size = max_size
+        self.method = method
 
         # Initialize scale
         self.scale = None
@@ -42,17 +48,20 @@ class NodeSizeScaler():
             Networkx graph to be used as reference for scaling
         """
         # Get the minimum and maximum degrees on the nodes of the graph
-        degrees = G.degree()
-        self.max_degree = max(dict(degrees).values())
-        self.min_degree = min(dict(degrees).values())
+        if self.method == 'degree':
+            scale_dict = G.degree()
+        else:
+            scale_dict = nx.betweenness_centrality(G)
+        self.max_scale = max(dict(scale_dict).values())
+        self.min_scale = min(dict(scale_dict).values())
 
         # Set min if none
         if self.min_size is None:
-            self.min_size = self.max_size / self.max_degree * self.min_degree
+            self.min_size = self.max_size / self.max_scale * self.min_scale
 
         # Solve for the scale
         self.scale = ((self.max_size - self.min_size)
-                      / (self.max_degree - self.min_degree))
+                      / (self.max_scale - self.min_scale))
 
     def transform(self, G) -> np.ndarray:
         """
@@ -72,10 +81,14 @@ class NodeSizeScaler():
         assert self.scale is not None, "Scaler should have been fitted."
 
         # Get node degrees as array
-        degrees = np.array(list(dict(G.degree()).values()))
+        if self.method == 'degree':
+            scales = np.array(list(dict(G.degree()).values()))
+        else:
+            scales = np.array(list(dict(nx.betweenness_centrality(G))
+                                   .values()))
 
         # Compute for node sizes
-        node_sizes = self.scale*(degrees - self.min_degree) + self.min_size
+        node_sizes = self.scale*(scales - self.min_scale) + self.min_size
 
         return node_sizes
 

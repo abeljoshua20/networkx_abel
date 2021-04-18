@@ -118,8 +118,11 @@ def plot_all_centrality(G, pos=None):
 
     for i, plot in enumerate(plots):
         ax = fig.add_subplot(2, 2, i+1)
-        ax, cb = plot(G, ax, pos)
-        fig.colorbar(cb, ax=ax)
+        try:
+            ax, cb = plot(G, ax, pos)
+            fig.colorbar(cb, ax=ax)
+        except Exception as e:
+            print(e)
         plt.title(titles[i])
 
     plt.show()
