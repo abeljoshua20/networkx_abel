@@ -4,7 +4,7 @@ Created on Sun Apr 18 13:13:09 2021
 
 @author: abelj
 """
-
+import random
 import networkx as nx
 import numpy as np
 
@@ -12,7 +12,7 @@ import numpy as np
 class SpreadingPhenomena():
     """Class representation of Spreading Phenomena in the network."""
 
-    def __init__(self, G):
+    def __init__(self, G, seed=None):
         """
         Initialize a new instance of the Spreading Phenomena.
 
@@ -20,6 +20,8 @@ class SpreadingPhenomena():
         ----------
         G : networkx graph
             network to simulate spreading phenomena.
+        seed : int, optional
+            random seed
 
         Returns
         -------
@@ -27,6 +29,7 @@ class SpreadingPhenomena():
 
         """
         self._G = G.copy()
+        random.seed(seed)
 
     @property
     def G(self):
