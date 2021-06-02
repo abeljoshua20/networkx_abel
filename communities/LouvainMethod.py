@@ -6,7 +6,7 @@ Created on Wed Apr 14 13:52:05 2021
 """
 import community
 import networkx as nx
-from communities.NetworkCommunities import NetworkCommunities
+from .NetworkCommunities import NetworkCommunities
 
 
 class LouvainMethod(NetworkCommunities):

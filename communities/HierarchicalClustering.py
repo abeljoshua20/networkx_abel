@@ -7,7 +7,7 @@ Created on Wed Apr 14 10:29:28 2021
 import numpy as np
 import networkx as nx
 from scipy.cluster import hierarchy
-from communities.NetworkCommunities import NetworkCommunities
+from .NetworkCommunities import NetworkCommunities
 
 
 class HierarchicalClustering(NetworkCommunities):
